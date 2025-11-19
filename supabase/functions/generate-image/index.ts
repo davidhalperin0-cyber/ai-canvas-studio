@@ -77,10 +77,14 @@ serve(async (req) => {
     const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
 
     if (!imageUrl) {
-      console.error('No image URL in response:', data);
+      const textContent = data.choices?.[0]?.message?.content;
+      console.error('No image URL in response. Text content:', textContent);
+      
       return new Response(
-        JSON.stringify({ error: 'No image generated' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          error: textContent || 'No image generated. Please try a different prompt or ensure you\'re requesting an image, not a video or other content.' 
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
